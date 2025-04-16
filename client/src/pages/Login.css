@@ -1,0 +1,110 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: 50px auto; /* Reducido margen superior de 200px a 50px */
+    width: 450px; /* Ancho reducido de 600px a 450px */
+    background: #fff;
+    padding: 20px 30px 25px; /* Padding más compacto */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Sombra suave para mejor definición */
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Reducido de 9px */
+    width: 100%;
+    margin-top: 15px; /* Reducido de 30px */
+}
+
+.text {
+    color: #ff6700;
+    font-size: 32px; /* Reducido de 48px */
+    font-weight: 700;
+}
+
+.underline {
+    width: 50px; /* Reducido de 61px */
+    height: 4px; /* Reducido de 6px */
+    background: #c0c0c0;
+    border-radius: 6px;
+}
+
+.inputs {
+    margin-top: 30px; /* Reducido de 55px */
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* Reducido de 25px */
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 380px; /* Reducido de 480px */
+    height: 65px; /* Reducido de 80px */
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.input img {
+    margin: 0px 20px; /* Reducido de 30px */
+    width: 20px; /* Asegurar tamaño consistente de iconos */
+}
+
+.input input {
+    height: 45px; /* Reducido de 50px */
+    width: 320px; /* Reducido de 400px */
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 16px; /* Reducido de 19px */
+}
+
+.forgot-password {
+    padding-left: 42px; /* Reducido de 62px */
+    margin-top: 18px; /* Reducido de 27px */
+    color: #797979;
+    font-size: 15px; /* Reducido de 18px */
+    text-align: match-parent; /* Alinea el contenido de manera central */
+}
+
+.forgot-password span {
+    color: #ff6700;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+
+
+.submit-container {
+    display: flex;
+    gap: 20px; /* Reducido de 30px */
+    margin: 35px auto; /* Reducido de 60px */
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 180px; /* Reducido de 220px */
+    height: 50px; /* Reducido de 59px */
+    color: #fff;
+    background: #ff6700;
+    border-radius: 50px;
+    font-size: 16px; /* Reducido de 19px */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Agregado para suavizar hover */
+}
+
+.submit:hover {
+    background: #ff9f1c; /* Efecto hover */
+}
+
+.gray {
+    background: #EAEAEA;
+    color: #676767;
+}

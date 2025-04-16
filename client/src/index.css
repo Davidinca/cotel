@@ -1,0 +1,13 @@
+html, body, #root {
+  height: 100%;
+  overflow: hidden; /* Bloquea todo scroll */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centra verticalmente */
+  background: rgb(135,134,133);
+  background: radial-gradient(circle, rgba(135,134,133,1) 0%, rgba(135,134,133,1) 100%);
+}
