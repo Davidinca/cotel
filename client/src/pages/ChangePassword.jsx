@@ -22,7 +22,7 @@ const ChangePassword = () => {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
-        if (!token || (user && user.password_changed)) {
+        if (!token || !user) {
             navigate('/');
             toast.error('Acceso no autorizado');
         }

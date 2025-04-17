@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ff8000;
+    padding: 10px 20px;
+    color: white;
+    position: relative;
+}
+
+.navbar-left h3 {
+    margin: 0;
+    font-weight: normal;
+}
+
+.navbar-right .navbar-btn {
+    margin-left: 10px;
+    padding: 6px 12px;
+    border: none;
+    background-color: #0074D9;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.navbar-right .logout {
+    background-color: #FF4136;
+}
+
+.navbar-btn:hover {
+    opacity: 0.85;
+}
+
+
