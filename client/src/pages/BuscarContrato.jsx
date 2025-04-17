@@ -31,7 +31,8 @@ const BuscarContrato = () => {
 
     return (
         <div className="buscar-contrato-container">
-            <h2>Buscar Contrato</h2>
+            <h2
+            >Buscar Contrato</h2>
             <input
                 type="text"
                 placeholder="Número de contrato (8 dígitos)"
@@ -45,28 +46,37 @@ const BuscarContrato = () => {
             {resultado && (
                 <div className="resultado">
                     <h3>Datos del Contrato</h3>
-                    <table className="tabla-resultado">
-                        <thead>
-                        <tr>
-                            <th>Número de Contrato</th>
-                            <th>Nombre del Cliente</th>
-                            <th>Servicios</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{resultado.numero_contrato}</td>
-                            <td>{resultado.cliente_nombre}</td>
-                            <td>
-                                {Array.isArray(resultado.tipos_contrato)
-                                    ? resultado.tipos_contrato.join(', ')
-                                    : 'Sin servicios'}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div className="tabla-contenedor">
+                        <table className="tabla-resultado">
+                            <thead>
+                            <tr>
+                                <th>Número de Contrato</th>
+                                <th>Cliente</th>
+                                <th>CI</th>
+                                <th>Dirección</th>
+                                <th>Teléfono</th>
+                                <th>Servicios</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{resultado.numero_contrato}</td>
+                                <td>{`${resultado.cliente.nombres} ${resultado.cliente.apellidos}`}</td>
+                                <td>{resultado.cliente.ci}</td>
+                                <td>{resultado.cliente.direccion}</td>
+                                <td>{resultado.cliente.telefono}</td>
+                                <td>
+                                    {Array.isArray(resultado.servicios)
+                                        ? resultado.servicios.map(s => s.tipo_servicio_display).join(', ')
+                                        : 'Sin servicios'}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
+
         </div>
     );
 };
