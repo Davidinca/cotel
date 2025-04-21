@@ -1,21 +1,23 @@
-import axios from "axios";
+import axios from './axios';
 
-const API_URL = "http://localhost:8000/api/usuarios/";
-
+// Login
 export const login = async (data) => {
-  try {
-    const response = await axios.post(`${API_URL}login/`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error("Credenciales incorrectas");
-  }
+  const response = await axios.post('/usuarios/login/', data);
+  return response.data;
 };
 
-export const migrarUsuario = async () => {
-  try {
-    const response = await axios.post(`${API_URL}migrar/`);
-    return response.data;
-  } catch (error) {
-    throw new Error("Error al migrar usuario");
-  }
+// Cambiar contraseña
+export const changePassword = async (data, token) => {
+  const response = await axios.post('/usuarios/change-password/', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+// Migrar usuario
+export const migrarUsuario = async (data) => {
+  const response = await axios.post('/usuarios/migrar/', data);
+  return response.data;
 };

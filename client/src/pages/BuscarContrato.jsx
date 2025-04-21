@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios.js';
 import './BuscarContrato.css';
 
 const BuscarContrato = () => {
@@ -18,7 +18,7 @@ const BuscarContrato = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:8000/api/contratos/buscar/?numero_contrato=${numeroContrato}`, {
+            const res = await axios.get(`/contratos/buscar/?numero_contrato=${numeroContrato}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

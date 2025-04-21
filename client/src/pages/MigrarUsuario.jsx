@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios.js';
 import user_icon from '../assets/person.png';
 import './Login.css';
 
@@ -12,7 +12,7 @@ const MigrarUsuario = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/usuarios/migrar/', {
+      const res = await axios.post('/usuarios/migrar/', {
         codigocotel: data.codigocotel,
       });
       toast.success('Usuario migrado correctamente');

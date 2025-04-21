@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios.js';
 import toast, {Toaster} from 'react-hot-toast';
 import './Login.css';
 
@@ -31,7 +31,7 @@ const ChangePassword = () => {
     const handleChangePassword = async (data) => {
         try {
             const response = await axios.post(
-                'http://localhost:8000/api/usuarios/change-password/',
+                '/usuarios/change-password/',
                 {
                     old_password: data.old_password,
                     new_password: data.new_password

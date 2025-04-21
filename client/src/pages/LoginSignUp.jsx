@@ -2,7 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios.js';
+import {login} from '../api/auth.js';
 import user_icon from '../assets/person.png';
 import password_icon from '../assets/password.png';
 import './Login.css';
@@ -14,7 +15,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:8000/api/usuarios/login/', {
+      const res = await axios.post('/usuarios/login/', {
         codigocotel: data.codigocotel,
         password: data.password,
       });
