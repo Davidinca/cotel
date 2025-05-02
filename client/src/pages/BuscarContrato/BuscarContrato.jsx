@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import axios from '../api/axios.js';
+import { buscarContrato } from '../../api/contratos.js';
 import './BuscarContrato.css';
+import toast, { Toaster } from 'react-hot-toast';
 
 const BuscarContrato = () => {
     const [numeroContrato, setNumeroContrato] = useState('');
     const [resultado, setResultado] = useState(null);
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const buscarContrato = async () => {
+    const buscar = async () => {
         setError('');
         setResultado(null);
 
@@ -16,30 +18,36 @@ const BuscarContrato = () => {
             return;
         }
 
+        const toastId = toast.loading('Buscando contrato...');
+
         try {
+            setIsLoading(true);
             const token = localStorage.getItem('token');
-            const res = await axios.get(`/contratos/buscar/?numero_contrato=${numeroContrato}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setResultado(res.data);
+            const data = await buscarContrato(numeroContrato, token);
+            setResultado(data);
+            toast.success('Contrato encontrado', { id: toastId });
         } catch (err) {
-            setError(err.response?.data?.detail || 'No se encontró el contrato o hubo un error.');
+            const mensaje = err.response?.data?.detail || 'No se encontró el contrato o hubo un error.';
+            setError(mensaje);
+            toast.error(mensaje, { id: toastId });
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="buscar-contrato-container">
-            <h2
-            >Buscar Contrato</h2>
+            <Toaster position="top-right" />
+            <h2>Buscar Contrato</h2>
             <input
                 type="text"
                 placeholder="Número de contrato (8 dígitos)"
                 value={numeroContrato}
                 onChange={(e) => setNumeroContrato(e.target.value)}
             />
-            <button onClick={buscarContrato}>Buscar</button>
+            <button onClick={buscar} disabled={isLoading}>
+                {isLoading ? 'Buscando...' : 'Buscar'}
+            </button>
 
             {error && <p className="error">{error}</p>}
 
@@ -76,10 +84,10 @@ const BuscarContrato = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
 
 export default BuscarContrato;
+
 

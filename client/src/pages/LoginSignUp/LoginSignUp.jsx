@@ -2,11 +2,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/axios.js';
-import {login} from '../api/auth.js';
-import user_icon from '../assets/person.png';
-import password_icon from '../assets/password.png';
-import './Login.css';
+import { login } from '../../api/auth.js';
+import user_icon from '../../assets/person.png';
+import password_icon from '../../assets/password.png';
+import '../../styles/forms.css'
 
 
 const Login = () => {
@@ -14,46 +13,67 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
+    let res;
     try {
-      const res = await axios.post('/usuarios/login/', {
-        codigocotel: data.codigocotel,
+      // 1) Llamada al backend
+      console.log('🟡 Enviando login con:', data);
+      res = await login({
+        codigocotel: String(data.codigocotel),
         password: data.password,
       });
+      console.log('✅ Respuesta de login:', res);
+    } catch (error) {
+      // Solo errores de red o HTTP != 2xx entran aquí
+      console.error('❌ Error en login():', error);
+      if (error.response) {
+        // HTTP error
+        const status = error.response.status;
+        const errMsg = error.response.data?.error;
+        if (status === 401) {
+          toast.error(errMsg || 'Credenciales inválidas');
+        } else if (status === 404) {
+          toast.error(errMsg || 'Usuario no migrado', {
+            icon: '⚠️',
+            action: { text: 'Migrar', onClick: () => navigate('/migrar') }
+          });
+        } else {
+          toast.error(errMsg || 'Error en el inicio de sesión');
+        }
+      } else {
+        // Network error u otro
+        toast.error('Error de conexión con el servidor');
+      }
+      return;
+    }
 
-      // Almacenar datos de usuario
-      localStorage.setItem('token', res.data.access);
-      localStorage.setItem('user', JSON.stringify(res.data.user_data));
+    // 2) Validación de la forma de los datos
+    if (!res || typeof res !== 'object') {
+      console.error('❌ Login respuesta inválida:', res);
+      toast.error('Respuesta inesperada del servidor');
+      return;
+    }
+    const { access, user_data } = res;
+    if (!access || !user_data) {
+      console.error('❌ Faltan campos en res:', res);
+      toast.error('Respuesta incompleta del servidor');
+      return;
+    }
 
-      // Verificar si necesita cambiar contraseña
-      if (res.data.user_data?.password_changed === false) {
-        toast('Debes cambiar tu contraseña para continuar', {
-          icon: '⚠️',
-          duration: 4000
-        });
+    // 3) Guardar y redirigir
+    try {
+      localStorage.setItem('token', access);
+      localStorage.setItem('user', JSON.stringify(user_data));
+
+      if (user_data.password_changed === false) {
+        toast('Debes cambiar tu contraseña para continuar', { icon: '⚠️' });
         navigate('/change-password');
       } else {
-        toast.success(`¡Bienvenido ${res.data.user_data.nombres}!`);
+        toast.success(`¡Bienvenido ${user_data.nombres}!`);
         navigate('/home');
       }
-
-    } catch (error) {
-      const errorResponse = error.response?.data;
-      const statusCode = error.response?.status;
-
-      // Manejador de errores personalizado
-      if (error.code === 'ERR_NETWORK') {
-        toast.error('Error de conexión con el servidor');
-      } else if (statusCode === 404) {
-        toast.error(errorResponse?.error || 'Usuario no migrado', {
-          icon: '⚠️',
-          action: {
-            text: 'Migrar',
-            onClick: () => navigate('/migrar')
-          }
-        });
-      } else {
-        toast.error(errorResponse?.error || 'Error en el inicio de sesión');
-      }
+    } catch (e) {
+      console.error('❌ Error al procesar la respuesta:', e);
+      toast.error('No se pudo completar el inicio de sesión');
     }
   };
 

@@ -1,86 +1,72 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/axios.js';
-import toast, {Toaster} from 'react-hot-toast';
-import './Login.css';
-
+import toast, { Toaster } from 'react-hot-toast';
+import { changePassword } from '../../api/auth.js';
+import '../../styles/forms.css'
 
 const ChangePassword = () => {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-        watch,
-        setError
+        watch
     } = useForm();
     const navigate = useNavigate();
     const newPassword = watch('new_password');
 
-    // Verificar autenticación al cargar
     React.useEffect(() => {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (!token || !user) {
-            navigate('/');
             toast.error('Acceso no autorizado');
+            navigate('/');
         }
     }, [navigate]);
 
-    const handleChangePassword = async (data) => {
+    const onSubmit = async (data) => {
+        console.log('🟡 Enviando changePassword con:', data);
+        let res;
         try {
-            const response = await axios.post(
-                '/usuarios/change-password/',
-                {
-                    old_password: data.old_password,
-                    new_password: data.new_password
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true
-                }
+            const token = localStorage.getItem('token');
+            res = await changePassword(
+                { old_password: data.old_password, new_password: data.new_password },
+                token
             );
-
-            // Actualizar almacenamiento local
-            localStorage.setItem('token', response.data.access);
-            const updatedUser = JSON.parse(localStorage.getItem('user'));
-            updatedUser.password_changed = true;
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-
-            // Feedback y redirección
-            toast.success('¡Contraseña actualizada con éxito!', {
-                icon: '🔒',
-                duration: 2000
-            });
-            setTimeout(() => navigate('/home'), 2000);
-
-        }catch (error) {
-            const backendResponse = error.response?.data;
-            const statusCode = error.response?.status;
-
-            // Manejar error específico de contraseña incorrecta
-            if (statusCode === 400 && backendResponse?.error) {
-                toast.error(backendResponse.error, {
-                    icon: '🔒',
-                    style: {
-                        background: '#e74c3c',
-                        color: 'white'
-                    }
-                });
+            console.log('✅ changePassword response:', res);
+        } catch (error) {
+            console.error('❌ Error en changePassword():', error);
+            if (error.response) {
+                const status = error.response.status;
+                const errData = error.response.data;
+                if (status === 400 && errData.error) {
+                    toast.error(errData.error, { icon: '🔒' });
+                } else if (errData.old_password) {
+                    toast.error(errData.old_password[0]);
+                } else {
+                    toast.error('Error en el servidor');
+                }
+            } else {
+                toast.error('Error de conexión con el servidor');
             }
-            // Manejar otros errores de validación
-            else if (backendResponse?.old_password) {
-                toast.error(backendResponse.old_password[0]);
-            }
-            // Error genérico
-            else {
-                toast.error('Error en el servidor');
-            }
+            return;
         }
+
+        const { access } = res;
+        if (!access) {
+            console.error('❌ access token missing in response:', res);
+            toast.error('Respuesta inválida del servidor');
+            return;
+        }
+
+        localStorage.setItem('token', access);
+        const updatedUser = JSON.parse(localStorage.getItem('user'));
+        updatedUser.password_changed = true;
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        toast.success('¡Contraseña actualizada con éxito!', { icon: '🔒', duration: 2000 });
+        setTimeout(() => navigate('/home'), 2000);
     };
 
     return (
@@ -91,15 +77,13 @@ const ChangePassword = () => {
                 <div className="underline"></div>
             </div>
 
-            <form onSubmit={handleSubmit(handleChangePassword)} className="inputs">
-                {/* Campo Contraseña Actual */}
+            <form onSubmit={handleSubmit(onSubmit)} className="inputs">
+                {/* Contraseña Actual */}
                 <div className="input">
                     <input
                         type="password"
                         placeholder="Contraseña actual"
-                        {...register('old_password', {
-                            required: 'Este campo es obligatorio'
-                        })}
+                        {...register('old_password', { required: 'Este campo es obligatorio' })}
                         className={errors.old_password ? 'input-error' : ''}
                     />
                     {errors.old_password && (
@@ -109,17 +93,14 @@ const ChangePassword = () => {
                     )}
                 </div>
 
-                {/* Campo Nueva Contraseña */}
+                {/* Nueva Contraseña */}
                 <div className="input">
                     <input
                         type="password"
                         placeholder="Nueva contraseña (mín. 8 caracteres)"
                         {...register('new_password', {
                             required: 'Campo obligatorio',
-                            minLength: {
-                                value: 8,
-                                message: 'Mínimo 8 caracteres'
-                            },
+                            minLength: { value: 8, message: 'Mínimo 8 caracteres' },
                             pattern: {
                                 value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
                                 message: 'Debe incluir mayúsculas, minúsculas y números'
@@ -141,8 +122,7 @@ const ChangePassword = () => {
                         placeholder="Confirmar nueva contraseña"
                         {...register('confirm_password', {
                             required: 'Confirma tu contraseña',
-                            validate: value =>
-                                value === newPassword || 'Las contraseñas no coinciden'
+                            validate: value => value === newPassword || 'Las contraseñas no coinciden'
                         })}
                         className={errors.confirm_password ? 'input-error' : ''}
                     />
@@ -152,13 +132,10 @@ const ChangePassword = () => {
             </span>
                     )}
                 </div>
+
                 <div className="submit-container">
-                    <button
-                        type="submit"
-                        className="submit"
-                        disabled={isSubmitting}
-                     >
-                    {isSubmitting ? 'Procesando...' : 'Cambiar Contraseña'}
+                    <button type="submit" className="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Procesando...' : 'Cambiar Contraseña'}
                     </button>
                 </div>
             </form>

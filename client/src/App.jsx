@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginSignUp from './pages/LoginSignUp';
-import MigrarUsuario from './pages/MigrarUsuario';
+import LoginSignUp from './pages/LoginSignUp/LoginSignUp.jsx';
+import MigrarUsuario from './pages/MigrarUsuario/MigrarUsuario.jsx';
 import Home from './pages/Dashboard.jsx';
-import ChangePassword from './pages/ChangePassword'; // Asegúrate de crear este componente
-import BuscarContrato from "./pages/BuscarContrato.jsx";
+import ChangePassword from './pages/ChangePassword/ChangePassword.jsx'; // Asegúrate de crear este componente
+import BuscarContrato from "./pages/BuscarContrato/BuscarContrato.jsx";
 
 function App() {
     return (

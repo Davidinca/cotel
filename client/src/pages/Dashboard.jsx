@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar.jsx';
 import './Dashboard.css';
-import BuscarContrato from './BuscarContrato.jsx';
+import BuscarContrato from './BuscarContrato/BuscarContrato.jsx';
 
 const Dashboard = () => {
     return (

@@ -7,11 +7,14 @@ export const login = async (data) => {
 };
 
 // Cambiar contraseña
-export const changePassword = async (data, token) => {
+export const changePassword = async (data) => {
+  const token = localStorage.getItem('token');
   const response = await axios.post('/usuarios/change-password/', data, {
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
+    withCredentials: true,
   });
   return response.data;
 };

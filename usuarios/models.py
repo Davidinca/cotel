@@ -26,12 +26,12 @@ class Roles(models.Model):
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     codigocotel = models.IntegerField(unique=True)
-    persona = models.IntegerField()
-    apellidopaterno = models.CharField(max_length=100)
-    apellidomaterno = models.CharField(max_length=100)
-    nombres = models.CharField(max_length=100)
+    persona = models.IntegerField(null=True, blank=True)
+    apellidopaterno = models.CharField(max_length=100,null=True, blank=True)
+    apellidomaterno = models.CharField(max_length=100, null=True, blank=True)
+    nombres = models.CharField(max_length=100, null=True, blank=True)
     estadoempleado = models.IntegerField(default=0)
-    fechaingreso = models.DateField()
+    fechaingreso = models.DateField(null=True, blank=True)
     password_changed = models.BooleanField(default=False)  # Nuevo campo
 
     # Roles y permisos
