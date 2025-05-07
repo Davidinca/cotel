@@ -90,7 +90,7 @@ DATABASES = {
         'NAME': 'benderelmagnifico',
         'USER': 'svpost',
         'PASSWORD': 'postgresql',
-        'HOST': '100.1.42.7',  # O la dirección de tu servidor PostgreSQL
+        'HOST': '100.97.134.106',  # O la dirección de tu servidor PostgreSQL
         'PORT': '5432',  # Puerto por defecto de PostgreSQL
     }
 }

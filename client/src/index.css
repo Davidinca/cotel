@@ -6,9 +6,7 @@ html, body, #root {
 }
 
 body {
-  background: rgb(135,134,133);
-  background: radial-gradient(circle, rgba(135,134,133,1) 0%, rgba(135,134,133,1) 100%);
+  background: rgb(122,122,122);
+  /*background: radial-gradient(circle, rgba(135,134,133,1) 0%, rgba(135,134,133,1) 100%);*/
   display: block; /* Quitamos flex que centraba todo */
 }
-
-/* Elimina el overflow-hidden que bloqueaba el scroll */
