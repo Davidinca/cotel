@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-
+from roles.models import Rol
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, codigocotel, password=None, **extra_fields):
@@ -16,28 +16,19 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(codigocotel, password, **extra_fields)
 
-
-class Roles(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.nombre
-
-
 class Usuario(AbstractBaseUser, PermissionsMixin):
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True, blank=True)
     codigocotel = models.IntegerField(unique=True)
     persona = models.IntegerField(null=True, blank=True)
-    apellidopaterno = models.CharField(max_length=100,null=True, blank=True)
+    apellidopaterno = models.CharField(max_length=100, null=True, blank=True)
     apellidomaterno = models.CharField(max_length=100, null=True, blank=True)
     nombres = models.CharField(max_length=100, null=True, blank=True)
     estadoempleado = models.IntegerField(default=0)
     fechaingreso = models.DateField(null=True, blank=True)
-    password_changed = models.BooleanField(default=False)  # Nuevo campo
+    password_changed = models.BooleanField(default=False)
+    
 
-    # Roles y permisos
-    rol = models.ForeignKey(Roles, on_delete=models.SET_NULL, null=True, blank=True)
-
-    # Permisos de Django sin conflictos
+    # Permisos de Django
     groups = models.ManyToManyField(
         "auth.Group",
         related_name="usuario_groups",
@@ -49,7 +40,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
 
-    # Información de autenticación
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -62,9 +52,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.nombres} {self.apellidopaterno} {self.apellidomaterno}"
 
-
 class Empleado_fdw(models.Model):
-    persona = models.IntegerField(primary_key=True)  # Marcamos persona como primary_key
+    persona = models.IntegerField(primary_key=True)
+
     apellidopaterno = models.CharField(max_length=100)
     apellidomaterno = models.CharField(max_length=100)
     nombres = models.CharField(max_length=100)
@@ -72,6 +62,11 @@ class Empleado_fdw(models.Model):
     codigocotel = models.IntegerField(unique=True)
     fechaingreso = models.DateField(null=True, blank=True)
 
+
     class Meta:
-        managed = False  # No permite que Django la modifique
+        managed = False
         db_table = "empleados_activos_fdw"
+
+
+
+

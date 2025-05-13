@@ -7,9 +7,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Empleado_fdw, Usuario
 from .serializers import ChangePasswordSerializer
+from roles.models import Rol
 
+
+from django.contrib.auth.models import Permission
+from rest_framework.permissions import IsAuthenticated
+
+from .permissions import TienePermiso
 
 class MigrarUsuarioView(APIView):
+    permission_classes = [IsAuthenticated, TienePermiso]
+    permiso_requerido = "Migrar"  # Nombre del permiso que se verifica
+
     def post(self, request, *args, **kwargs):
         # Obtener el código COTEL enviado desde el frontend
         codigocotel = request.data.get('codigocotel')
@@ -35,6 +44,13 @@ class MigrarUsuarioView(APIView):
             return Response({"message": "El usuario ya está registrado."},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # Obtener el rol "Usuario" para asignarlo
+        try:
+            rol_usuario = Rol.objects.get(nombre="usuario")
+        except Rol.DoesNotExist:
+            return Response({"error": "El rol de Usuario no existe."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # Crear el usuario
         usuario = Usuario(
             codigocotel=empleado.codigocotel,
@@ -43,15 +59,17 @@ class MigrarUsuarioView(APIView):
             apellidomaterno=empleado.apellidomaterno,
             nombres=empleado.nombres,
             estadoempleado=empleado.estadoempleado,
-            fechaingreso=empleado.fechaingreso
+            fechaingreso=empleado.fechaingreso,
+            rol=rol_usuario  # Asignar el rol de "Usuario"
         )
 
         # Usar set_password para encriptar la contraseña correctamente
         usuario.set_password(str(codigocotel))
         usuario.save()
 
-        return Response({"message": "Usuario creado exitosamente."},
+        return Response({"message": "Usuario creado exitosamente con rol de 'Usuario'."},
                         status=status.HTTP_201_CREATED)
+
 
 class LoginJWTView(APIView):
     def post(self, request, *args, **kwargs):
