@@ -9,3 +9,4 @@ router.register(r'permisos', PermisoViewSet)
 urlpatterns = [
     path('', include(router.urls)),
 ]
+    

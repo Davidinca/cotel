@@ -9,6 +9,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = [
+            'id',
             'codigocotel',
             'persona',
             'apellidopaterno',
@@ -16,19 +17,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'nombres',
             'estadoempleado',
             'fechaingreso',
-            'password'
+            'password',
+            'rol',
         ]
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True, 'required': False}
         }
 
-    def create(self, validated_data):
-        password = validated_data.pop('password', None)
-        usuario = Usuario.objects.create(**validated_data)
-        if password:
-            usuario.set_password(password)
-            usuario.save()
-        return usuario
 
 class EmpleadoSerializer(serializers.ModelSerializer):
     class Meta:
