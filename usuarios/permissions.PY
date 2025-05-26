@@ -19,4 +19,4 @@ class TienePermiso(permissions.BasePermission):
             return False
 
         # Verificar si el rol tiene el permiso requerido
-        return rol.permisos.filter(nombre=permiso_requerido).exists()
+        return rol.permisos.filter(nombre=permiso_requerido, activo=True).exists()

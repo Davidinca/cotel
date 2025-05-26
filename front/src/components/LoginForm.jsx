@@ -1,21 +1,37 @@
-// src/components/LoginForm.jsx
-import { useState } from 'react';
-import { login } from '../services/authService';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
 
-export default function LoginForm({ onLoginSuccess }) {
-  const [codigocotel, setCodigocotel] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+export default function LoginPage() {
+  const [codigocotel, setCodigocotel] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); // Para redirigir
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = await login(codigocotel, password);
-      onLoginSuccess(data); // token y user_data
-    } catch (err) {
-      setError('Credenciales inválidas');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const data = await login(codigocotel, password);
+    console.log("Respuesta del login:", data);
+
+    localStorage.setItem("token", data.access);
+    localStorage.setItem("refreshToken", data.refresh);
+    localStorage.setItem("user_data", JSON.stringify(data.user_data)); // 🔥 GUARDA LOS PERMISOS AQUÍ
+
+    if (!data.user_data.password_changed) {
+      console.log("Usuario necesita cambiar su contraseña. Redirigiendo...");
+      navigate("/change-password");
+    } else {
+      console.log("Redirigiendo al dashboard...");
+      navigate("/dashboard");
     }
-  };
+  } catch (err) {
+    console.error("Error en login:", err.response?.data || err.message);
+    setError("Credenciales inválidas");
+  }
+};
+
+
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-20 p-6 bg-white rounded-2xl shadow-md">

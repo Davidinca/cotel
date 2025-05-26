@@ -12,10 +12,11 @@ from .serializers import UsuarioSerializer, ChangePasswordSerializer
 from roles.models import Rol
 from .permissions import TienePermiso
 
+
 # --- MIGRAR USUARIO DESDE ORACLE ---
 class MigrarUsuarioView(APIView):
     permission_classes = [IsAuthenticated, TienePermiso]
-    permiso_requerido = "Migrar"
+    permiso_requerido = "Migrar_Usuario"
 
     def post(self, request):
         codigocotel = request.data.get('codigocotel')
@@ -75,12 +76,18 @@ class LoginJWTView(APIView):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
+        rol = user.rol
+        permisos = []
+        if rol:
+            permisos = list(rol.permisos.filter(activo=True).values_list('nombre', flat=True))
+
         data = {
             "access": access_token,
             "user_data": {
                 "nombres": user.nombres,
                 "codigocotel": user.codigocotel,
-                "password_changed": user.password_changed
+                "password_changed": user.password_changed,
+                "permisos": permisos  
             }
         }
 
@@ -90,6 +97,7 @@ class LoginJWTView(APIView):
 
         data["refresh"] = str(refresh)
         return Response(data, status=status.HTTP_200_OK)
+
 
 # --- CAMBIAR CONTRASEÑA ---
 class ChangePasswordView(APIView):
@@ -119,7 +127,7 @@ class ChangePasswordView(APIView):
 # --- CREAR USUARIO MANUALMENTE ---
 class CrearUsuarioManualView(APIView):
     permission_classes = [IsAuthenticated, TienePermiso]
-    permiso_requerido = "crear"
+    permiso_requerido = "Crear_Usuario"
 
     def post(self, request):
         data = request.data.copy()
@@ -148,14 +156,14 @@ class CrearUsuarioManualView(APIView):
 # --- LISTAR USUARIOS ---
 class UsuarioListView(ListAPIView):
     permission_classes = [IsAuthenticated, TienePermiso]
-    permiso_requerido = "crear"
+    permiso_requerido = "Ver_Usuario"
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
 # --- DETALLE Y EDICIÓN DE USUARIO ---
 class UsuarioDetailView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, TienePermiso]
-    permiso_requerido = "crear"
+    permiso_requerido = "Editar_Usuario"
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     lookup_field = 'id'
@@ -163,7 +171,7 @@ class UsuarioDetailView(RetrieveUpdateAPIView):
 # --- CAMBIAR ESTADO DE USUARIO ---
 class CambiarEstadoEmpleadoView(APIView):
     permission_classes = [IsAuthenticated, TienePermiso]
-    permiso_requerido = "crear"  # o "modificar", según cómo manejes los permisos
+    permiso_requerido = "Estado_Usuario"   
 
     def patch(self, request, id):
         try:
